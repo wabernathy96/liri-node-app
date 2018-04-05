@@ -27,35 +27,34 @@ if(liriCmd == undefined){
 }else{
     
     // Logic for my-tweets command
-    var tClient = new Twitter(twitterKeys);
+    function getTweets() {
+        var tClient = new Twitter(twitterKeys);
 
-    var twitParams = {
-        screen_name: '_McShaznasty_'
-    };
+        var twitParams = {
+            screen_name: '_McShaznasty_'
+        };
 
-    if(liriCmd === 'my-tweets'){
-        tClient.get('statuses/user_timeline', twitParams, function(error, tweets, response) {
-            if (!error) {
-                for(i=0; i<tweets.length; i++){
-                    var allTweets = tweets[i];
-
-                    var tweetText = allTweets.text;
-                    var tweetTime = allTweets.created_at;
-
-                    console.log(tweetText);
-                    console.log(tweetTime);
-                };
-            } else {
-                throw error
-            }
-        });
-    };
-
-    // Logic for spotify-this-song command
-    var sClient = new Spotify(spotifyKeys);
-
-    if (liriCmd === 'spotify-this-song'){
         
+            tClient.get('statuses/user_timeline', twitParams, function(err, tweets, response) {
+                if (!err) {
+                    for(i=0; i<tweets.length; i++){
+                        var allTweets = tweets[i];
+
+                        var tweetText = allTweets.text;
+                        var tweetTime = allTweets.created_at;
+
+                        console.log(tweetText);
+                        console.log(tweetTime);
+                    };
+                } else {
+                    throw err
+                }
+            });
+    };
+    // Logic for spotify-this-song command
+    function getSong(songArg) {
+        var sClient = new Spotify(spotifyKeys);
+
         cmdArg.shift(); // Shift past node.js in node array
         cmdArg.shift(); // Shift past file path in node array
         cmdArg.shift(); // Shift past spotify command in node array
@@ -108,9 +107,9 @@ if(liriCmd == undefined){
             });
         }; 
     };
+        
     // Logic for movie-this command
-    if (liriCmd === 'movie-this'){
-
+    function getMovie() {
         cmdArg.shift(); // Shift past node.js in node array
         cmdArg.shift(); // Shift past file path in node array
         cmdArg.shift(); // Shift past movie-this command in node array
@@ -166,4 +165,35 @@ if(liriCmd == undefined){
     };
 
     // Logic for do-what-it-says command
+    function whatItDoNephew() {
+        fs.readFile("random.txt", "utf8", function(err, data) {
+            if(!err){
+                var text = data.split(',');
+                var command = text[0];
+                var commandVal = text[1];
+                
+                console.log(command);
+                console.log(commandVal);
+                   
+
+            }else{
+                throw err
+            };
+        });
+    };
+
+    switch(liriCmd){
+        case 'my-tweets':
+            getTweets();
+        break;
+        case 'spotify-this-song':
+            getSong();
+        break;
+        case 'movie-this':
+            getMovie();
+        break;
+        case 'do-what-it-says':
+            whatItDoNephew();
+        break;
+    };
 };
