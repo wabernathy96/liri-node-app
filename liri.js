@@ -20,9 +20,10 @@ var cmdArg = process.argv;
 // Set command line input for liri always equal to the second argument
 var liriCmd = cmdArg[2];
 
-if(liriCmd === ''){
+
+if(liriCmd == undefined){
     throw `Command needed i.e. my-tweets,
-    spotify-this-son, movie-this, do-what-it-says`
+    spotify-this-son, movie-this, do-what-it-says`;
 }else{
     
     // Logic for my-tweets command
@@ -59,7 +60,7 @@ if(liriCmd === ''){
         cmdArg.shift(); // Shift past file path in node array
         cmdArg.shift(); // Shift past spotify command in node array
 
-        var songArg = cmdArg.join('-'); // Join all other words from [3] on
+        var songArg = cmdArg.join('-'); // Join all other words from [3] on 
 
         var spotParams = {
             type: 'track',
@@ -87,7 +88,7 @@ if(liriCmd === ''){
                 }
             });
         }else{
-            sClient.search({type: 'track', query: 'Baptized in Decadence'}, function(err, data){
+            sClient.search({type: 'track', query: 'Cannibalistic Dissection', limit: 1}, function(err, data){
                 if(!err){
                     for(j=0; j<data.tracks.items.length;j++){
                         var topSong = data.tracks.items[j];
@@ -108,6 +109,61 @@ if(liriCmd === ''){
         }; 
     };
     // Logic for movie-this command
+    if (liriCmd === 'movie-this'){
+
+        cmdArg.shift(); // Shift past node.js in node array
+        cmdArg.shift(); // Shift past file path in node array
+        cmdArg.shift(); // Shift past movie-this command in node array
+
+        var movieQ = cmdArg.join('-'); // Join all other words from [3] on 
+
+        var queryUrl = 'http://www.omdbapi.com/?t=' + movieQ + '&y=&plot=short&type=movie&r=json&apikey=trilogy';
+        var defaultUrl ='http://www.omdbapi.com/?t=Mr.Nobody&y=&plot=short&type=movie&r=json&apikey=trilogy';
+
+        if (movieQ != ''){
+            request(queryUrl, function(err, res, body){
+                if(!err){
+                    var parse = JSON.parse(body);
+
+                    var movieInfo = {
+                        Title: parse.Title,
+                        Release_Year: parse.Year,
+                        Country_of_Origin: parse.Country,
+                        Language_of_Origin: parse.Language,
+                        IMDb_Rating: parse.Ratings[0].Value,
+                        Rotten_Rating: parse.Ratings[1].Value,
+                        Actors: parse.Actors,
+                        Summary: parse.Plot,
+                    }
+
+                    console.log(movieInfo);
+                }else{
+                    throw err
+                };
+            });
+        }else{
+            request(defaultUrl, function(err, res, body){
+                if(!err){
+                    var parse = JSON.parse(body);
+
+                    var defaultMovie = {
+                        Title: parse.Title,
+                        Release_Year: parse.Year,
+                        Country_of_Origin: parse.Country,
+                        Language_of_Origin: parse.Language,
+                        IMDb_Rating: parse.Ratings[0].Value,
+                        Rotten_Rating: parse.Ratings[1].Value,
+                        Actors: parse.Actors,
+                        Summary: parse.Plot,
+                    }
+
+                    console.log(defaultMovie);
+                }else{
+                    throw err
+                };
+            });
+        }
+    };
 
     // Logic for do-what-it-says command
 };
